@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
                 startActivityForResult(Intent.createChooser(intent,"Complete action using"),RC_PHOTO_PICKER);
 
+                Log.e("MainActivity","image picker : "+intent);
+
             }
         });
 
@@ -196,7 +199,10 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         } else if (resultCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+
             Uri selectedImageUri = data.getData();
+
+            Log.e("Mainactivity","Select image uri : " +selectedImageUri);
 
             //Get a ref to store file at chat_photos/<filename>
             StorageReference photoRef = mchatPhotoStorageReference.child(selectedImageUri.getLastPathSegment());
@@ -305,4 +311,5 @@ public class MainActivity extends AppCompatActivity {
             mChildEventListener = null;
         }
     }
+
 }
