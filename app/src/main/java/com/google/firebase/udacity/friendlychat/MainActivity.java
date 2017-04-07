@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Sign in cancled", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        } else if (resultCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+        } else if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
 
             Uri selectedImageUri = data.getData();
 
