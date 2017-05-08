@@ -429,21 +429,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void translated(){
 
-        String translatetotagalog = mMessageEditText.getText().toString();//get the value of text
-        String text = translator.translte(translatetotagalog, "en", "fr");
-        FriendlyMessage friendlyMessage = new FriendlyMessage(text, mUsername, null);
+       /* String translatetotagalog = mMessageEditText.getText().toString();//get the value of text
+        String text = translator.translte(mMessageEditText.getText().toString(), "en", "fr");*/
+        FriendlyMessage friendlyMessage = new FriendlyMessage(translator.translte(mMessageEditText.getText().toString(), "en", "fr"), mUsername, null);
         mMessageDatabaseReference.push().setValue(friendlyMessage);
 
         // Clear input box
         mMessageEditText.setText("");
-        Log.e("Mainactivity","friendlyMessage : " +mMessageEditText.getText().toString());
-        Log.e("Mainactivity","translatetotagalog : " +translatetotagalog);
-        Log.e("Mainactivity","text : " +text);
-        Log.e("Mainactivity","friendlyMessage : " +friendlyMessage);
-        Log.e("Mainactivity","translate : " +mMessageDatabaseReference.push().setValue(friendlyMessage));
+
+        Log.e("Mainactivity","friendlyMessage : " +translator.translte(mMessageEditText.getText().toString(), "en", "fr"));
 
     }
-
-
-
 }
