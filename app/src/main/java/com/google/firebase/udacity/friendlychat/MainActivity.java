@@ -15,9 +15,12 @@
  */
 package com.google.firebase.udacity.friendlychat;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -33,6 +36,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -57,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.R.attr.tag;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class MainActivity extends AppCompatActivity {
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
     private Button mSendButton;
+    GoogleTranslate translator;
 
     //Firebase Instance variable
     private FirebaseDatabase mFirebaseDatabase;
@@ -93,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         mUsername = ANONYMOUS;
 
@@ -162,11 +171,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: Send messages on click
-                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null);
-                mMessageDatabaseReference.push().setValue(friendlyMessage);
-
-                // Clear input box
-                mMessageEditText.setText("");
+                //sendMethod();
+                new EnglishToTagalog().execute();
             }
         });
 
@@ -203,6 +209,16 @@ public class MainActivity extends AppCompatActivity {
         defaultConfigMap.put(FRIENDLY_MSG_LENGTH_KEY,DEFAULT_MSG_LENGTH_LIMIT);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
         fetchConfig();
+    }
+
+    public void sendMethod()
+    {
+        FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null);
+        mMessageDatabaseReference.push().setValue(friendlyMessage);
+        Log.e("Mainactivity","friendlyMessage : " +mMessageEditText.getText().toString());
+
+        // Clear input box
+        mMessageEditText.setText("");
     }
 
     @Override
@@ -360,4 +376,74 @@ public class MainActivity extends AppCompatActivity {
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(friendly_msg_length.intValue())});
         Log.d(TAG, FRIENDLY_MSG_LENGTH_KEY + " = " + friendly_msg_length);
     }
+    private class EnglishToTagalog extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog progress = null;
+
+        protected void onError(Exception ex) {
+
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                translator = new GoogleTranslate("AIzaSyDPMyNemf6lMzaiqdnAE3yw0QhvNgzsxw8");
+
+                Thread.sleep(1000);
+
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+
+        }
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            //start the progress dialog
+            progress = ProgressDialog.show(MainActivity.this, null, "Translating...");
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.setIndeterminate(true);
+            super.onPreExecute();
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            progress.dismiss();
+
+            super.onPostExecute(result);
+            translated();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+    }
+
+
+    public void translated(){
+
+        String translatetotagalog = mMessageEditText.getText().toString();//get the value of text
+        String text = translator.translte(translatetotagalog, "en", "fr");
+        FriendlyMessage friendlyMessage = new FriendlyMessage(text, mUsername, null);
+        mMessageDatabaseReference.push().setValue(friendlyMessage);
+
+        // Clear input box
+        mMessageEditText.setText("");
+        Log.e("Mainactivity","friendlyMessage : " +mMessageEditText.getText().toString());
+        Log.e("Mainactivity","translatetotagalog : " +translatetotagalog);
+        Log.e("Mainactivity","text : " +text);
+        Log.e("Mainactivity","friendlyMessage : " +friendlyMessage);
+        Log.e("Mainactivity","translate : " +mMessageDatabaseReference.push().setValue(friendlyMessage));
+
+    }
+
+
+
 }
