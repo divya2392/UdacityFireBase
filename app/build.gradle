@@ -50,6 +50,7 @@ dependencies {
 
     compile 'com.firebaseui:firebase-ui-auth:1.2.0'
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.firebase:firebase-client-android:2.5.2+'
 
 }
 apply plugin: 'com.google.gms.google-services'
