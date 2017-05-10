@@ -2,4 +2,24 @@
     <string name="app_name">Friendly Chat</string>
     <string name="sign_out">Sign Out</string>
     <string name="send_button_label">Send</string>
+
+
+    <string name="pref_lang_hindi_label">Hindi</string>
+    <string name="pref_lang_english_label">English</string>
+    <string name="pref_lang_french_label">French</string>
+    <string name="pref_lang_germany_label">Germany</string>
+    <string name="pref_lang_indonesia_label">Indo</string>
+
+
+    <string name="pref_lang_hindi_value" translatable="false">Hindi</string>
+    <string name="pref_lang_english_value" translatable="false">English</string>
+    <string name="pref_lang_french_value" translatable="false">French</string>
+    <string name="pref_lang_germany_value" translatable="false">Germany</string>
+    <string name="pref_lang_indonesia_value" translatable="false">Indo</string>
+
+    <string name="pref_lang_label">Language</string>
+    <string name="pref_language_key" translatable="false">language</string>
+
+    <string name="action_settings">Settings</string>
+
 </resources>

@@ -17,12 +17,14 @@ package com.google.firebase.udacity.friendlychat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -64,7 +66,7 @@ import java.util.Map;
 import static android.R.attr.tag;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "MainActivity";
 
@@ -171,8 +173,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: Send messages on click
-                //sendMethod();
-                new EnglishToTagalog().execute();
+                sendMethod();
+                //new EnglishToTagalog().execute();
             }
         });
 
@@ -209,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
         defaultConfigMap.put(FRIENDLY_MSG_LENGTH_KEY,DEFAULT_MSG_LENGTH_LIMIT);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
         fetchConfig();
+        setupSharedPreferences();
     }
 
     public void sendMethod()
@@ -280,6 +283,10 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.sign_out_menu:
                 AuthUI.getInstance().signOut(this);
+                return true;
+            case R.id.action_settings:
+                Intent startSettingActivity = new Intent(this, SettingsActivity.class);
+                startActivity(startSettingActivity);
                 return true;
             default:
             return super.onOptionsItemSelected(item);
@@ -376,6 +383,9 @@ public class MainActivity extends AppCompatActivity {
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(friendly_msg_length.intValue())});
         Log.d(TAG, FRIENDLY_MSG_LENGTH_KEY + " = " + friendly_msg_length);
     }
+
+
+
     private class EnglishToTagalog extends AsyncTask<Void, Void, Void> {
         private ProgressDialog progress = null;
 
@@ -426,7 +436,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     public void translated(){
 
        /* String translatetotagalog = mMessageEditText.getText().toString();//get the value of text
@@ -439,5 +448,35 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("Mainactivity","friendlyMessage : " +translator.translte(mMessageEditText.getText().toString(), "en", "fr"));
 
+    }
+
+    public void setupSharedPreferences()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        loadLangFromPreferences(sharedPreferences);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(MainActivity.this);
+
+    }
+
+    private void loadLangFromPreferences(SharedPreferences sharedPreferences)
+    {
+        mMessageEditText.setText(sharedPreferences.getString(getString(R.string.pref_language_key),getString(R.string.pref_lang_english_value)));
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if(key.equals(getString(R.string.pref_language_key)))
+        {
+            loadLangFromPreferences(sharedPreferences);
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(MainActivity.this);
     }
 }
